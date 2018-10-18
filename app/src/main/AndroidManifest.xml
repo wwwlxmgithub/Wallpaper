@@ -44,6 +44,7 @@
         <activity android:name=".CircleTextActivity" />
         <activity android:name=".StackViewActivity" />
         <activity android:name=".TestActivity" />
+        <activity android:name=".BMIActivity"></activity>
     </application>
 
 </manifest>
