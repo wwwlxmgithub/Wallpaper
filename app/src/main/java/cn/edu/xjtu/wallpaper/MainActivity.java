@@ -55,6 +55,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, StackViewActivity.class));
             }
         });
+        findViewById(R.id.bmiButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, BMIActivity.class));
+
+            }
+        });
     }
 
 
