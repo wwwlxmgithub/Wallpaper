@@ -1,12 +1,14 @@
 package cn.edu.xjtu.wallpaper;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -17,53 +19,89 @@ public class BoHeBMIView extends View {
     private String title, normalText;
     private int minVal, minNormal, maxNormal, maxVal;
     private float currVal;
-    private int leftColor, midColor, rightColor, textColor;
-    private int upDrawable = R.drawable.ic_up, downDrawable = R.drawable.ic_down;
-
-    private float titleSize, textSize;
+    private int leftColor, midColor, rightColor, normalTextColor;
+    private float titleSize, normalTextSize;
     private Paint textPaint, linePaint;
     private Bitmap bitmapUp, bitmapDown;
-    private int width, height, stokeWidth, smallCircleRadius, circleStokeWidth;
+    private int width, height, lineWidth, smallCircleRadius, circleStokeWidth;
     public BoHeBMIView(Context context) {
         super(context);
-        init();
+        init(context, null);
     }
 
     public BoHeBMIView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        init();
+        init(context, attrs);
     }
 
     public BoHeBMIView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        init(context, attrs);
     }
 
     public BoHeBMIView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        init();
+        init(context, attrs);
     }
 
-    private void init() {
-        System.out.println("BoHeBMIView.init");
-        title = "BMI";
-        minVal = 0;
-        minNormal = 316;
-        maxNormal = 354;
-        maxVal = 400;
-        leftColor = getResources().getColor(R.color.yellow);
-        midColor = getResources().getColor(R.color.green);
-        rightColor = getResources().getColor(R.color.gray);
+    private void init(Context context, AttributeSet attrs) {
+        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.BoHeBMIView);
+        String titleStr = array.getString(R.styleable.BoHeBMIView_title);
+        if (titleStr != null) {
+            title = titleStr;
+        } else {
+            title = "";
+        }
+        titleSize = array.getDimension(R.styleable.BoHeBMIView_normalTextSize, 50);
+        smallCircleRadius = (int) array.getDimension(R.styleable.BoHeBMIView_circleRadius, 20);
+        circleStokeWidth = (int) array.getDimension(R.styleable.BoHeBMIView_circleStokeWidth, 10);
+        Drawable up = array.getDrawable(R.styleable.BoHeBMIView_upDrawable);
+        Drawable down = array.getDrawable(R.styleable.BoHeBMIView_downDrawable);
+        if (up != null) {
+            bitmapUp = Bitmap.createBitmap(up.getIntrinsicWidth(),
+                    up.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmapUp);
+            up.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            up.draw(canvas);
+        } else {
+            bitmapUp = getBitmap(context, R.drawable.ic_up);
+        }
 
-        textColor = Color.GRAY;
-        currVal = 200;
-        titleSize = 50;
-        textSize = 44;
-        stokeWidth = 10;
-        smallCircleRadius = 20;
-        circleStokeWidth = 10;
+        if (down != null) {
+            bitmapDown = Bitmap.createBitmap(down.getIntrinsicWidth(),
+                    down.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmapDown);
+            down.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            down.draw(canvas);
+        } else {
+            bitmapDown = getBitmap(context, R.drawable.ic_down);
+        }
 
-        normalText = "正常";
+        titleStr = array.getString(R.styleable.BoHeBMIView_normalText);
+        if (titleStr != null) {
+            normalText = titleStr;
+        } else {
+            normalText = "正常";
+        }
+
+        minNormal = array.getInteger(R.styleable.BoHeBMIView_minNormal, 316);
+        maxNormal = array.getInteger(R.styleable.BoHeBMIView_maxNormal, 354);
+
+        minVal = array.getInteger(R.styleable.BoHeBMIView_minVal, 0);
+        maxVal = array.getInteger(R.styleable.BoHeBMIView_maxVal, 400);
+
+        leftColor = array.getColor(R.styleable.BoHeBMIView_leftColor, Color.argb(255, 246, 174, 3));
+        midColor = array.getColor(R.styleable.BoHeBMIView_midColor, Color.argb(255, 31, 156, 13));
+        rightColor = array.getColor(R.styleable.BoHeBMIView_rightColor, Color.argb(255, 255, 63, 66));
+
+        normalTextColor = array.getColor(R.styleable.BoHeBMIView_normalTextColor, Color.GRAY);
+
+        lineWidth = (int) array.getDimension(R.styleable.BoHeBMIView_lineWidth, 10);
+
+        normalTextSize = array.getDimension(R.styleable.BoHeBMIView_normalTextSize, 44);
+        currVal = array.getFloat(R.styleable.BoHeBMIView_currentVal, 200);
+
+        array.recycle();
 
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setColor(Color.GRAY);
@@ -73,10 +111,21 @@ public class BoHeBMIView extends View {
         linePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         linePaint.setColor(leftColor);
         linePaint.setStyle(Paint.Style.STROKE);
-        linePaint.setStrokeWidth(stokeWidth);
+        linePaint.setStrokeWidth(lineWidth);
+    }
 
-        bitmapUp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_up);
-        bitmapDown = BitmapFactory.decodeResource(getResources(), R.drawable.ic_down);
+    private Bitmap getBitmap(Context context,int vectorDrawableId) {
+        Bitmap bitmap=null;
+        Drawable vectorDrawable = context.getDrawable(vectorDrawableId);
+        if (vectorDrawable != null) {
+            bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(),
+                    vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            vectorDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            vectorDrawable.draw(canvas);
+        }
+        // bitmap = Bitmap.createScaledBitmap(bitmap, (int)textSize, (int)textSize , false);
+        return bitmap;
     }
 
     @Override
@@ -84,6 +133,148 @@ public class BoHeBMIView extends View {
         super.onSizeChanged(w, h, oldw, oldh);
         width = w;
         height = h;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getNormalText() {
+        return normalText;
+    }
+
+    public void setNormalText(String normalText) {
+        this.normalText = normalText;
+        invalidate();
+    }
+
+    public int getMinVal() {
+        return minVal;
+    }
+
+    public void setMinVal(int minVal) {
+        this.minVal = minVal;
+    }
+
+    public int getMinNormal() {
+        return minNormal;
+    }
+
+    public void setMinNormal(int minNormal) {
+        this.minNormal = minNormal;
+        invalidate();
+    }
+
+    public int getMaxNormal() {
+        return maxNormal;
+    }
+
+    public void setMaxNormal(int maxNormal) {
+        this.maxNormal = maxNormal;
+        invalidate();
+    }
+
+    public int getMaxVal() {
+        return maxVal;
+    }
+
+    public void setMaxVal(int maxVal) {
+        this.maxVal = maxVal;
+        invalidate();
+    }
+
+    public float getCurrVal() {
+        return currVal;
+    }
+
+    public int getLeftColor() {
+        return leftColor;
+    }
+
+    public int getMidColor() {
+        return midColor;
+    }
+
+    public void setMidColor(int midColor) {
+        this.midColor = midColor;
+        invalidate();
+    }
+
+    public int getRightColor() {
+        return rightColor;
+    }
+
+
+    public float getTitleSize() {
+        return titleSize;
+    }
+
+    public void setTitleSize(float titleSize) {
+        this.titleSize = titleSize;
+        invalidate();
+
+    }
+
+
+    public Bitmap getBitmapUp() {
+        return bitmapUp;
+    }
+
+    public void setBitmapUp(Bitmap bitmapUp) {
+        this.bitmapUp = bitmapUp;
+    }
+
+    public Bitmap getBitmapDown() {
+        return bitmapDown;
+    }
+
+    public void setBitmapDown(Bitmap bitmapDown) {
+        this.bitmapDown = bitmapDown;
+    }
+
+    public int getLineWidth() {
+        return lineWidth;
+    }
+
+    public void setLineWidth(int lineWidth) {
+        this.lineWidth = lineWidth;
+        invalidate();
+    }
+
+    public int getSmallCircleRadius() {
+        return smallCircleRadius;
+    }
+
+    public int getNormalTextColor() {
+        return normalTextColor;
+    }
+
+    public void setNormalTextColor(int normalTextColor) {
+        this.normalTextColor = normalTextColor;
+        invalidate();
+    }
+
+    public float getNormalTextSize() {
+        return normalTextSize;
+    }
+
+    public void setNormalTextSize(float normalTextSize) {
+        this.normalTextSize = normalTextSize;
+        invalidate();
+    }
+
+    public void setSmallCircleRadius(int smallCircleRadius) {
+        this.smallCircleRadius = smallCircleRadius;
+        invalidate();
+    }
+
+    public int getCircleStokeWidth() {
+        return circleStokeWidth;
+    }
+
+    public void setCircleStokeWidth(int circleStokeWidth) {
+        this.circleStokeWidth = circleStokeWidth;
+        invalidate();
     }
 
     public void setCurrVal(float currVal) {
@@ -106,6 +297,18 @@ public class BoHeBMIView extends View {
         invalidate();
     }
 
+    private Bitmap tintBitmap(Bitmap inBitmap , int tintColor) {
+        if (inBitmap == null) {
+            return null;
+        }
+        Bitmap outBitmap = Bitmap.createBitmap (inBitmap.getWidth(), inBitmap.getHeight() , inBitmap.getConfig());
+        Canvas canvas = new Canvas(outBitmap);
+        Paint paint = new Paint();
+        paint.setColorFilter( new PorterDuffColorFilter(tintColor, PorterDuff.Mode.SRC_IN)) ;
+        canvas.drawBitmap(inBitmap , 0, 0, paint) ;
+        return outBitmap ;
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -126,9 +329,9 @@ public class BoHeBMIView extends View {
         if (currVal < minNormal) {
             // 在左边部分
             int x = (int) ((currVal / (double)minNormal) * width / 3) - smallCircleRadius;
-            int y = offsetY + height / 3 - stokeWidth / 2;
-            if (x < smallCircleRadius) {
-                x = smallCircleRadius;
+            int y = offsetY + height / 3 - lineWidth / 2;
+            if (x < smallCircleRadius + circleStokeWidth) {
+                x = smallCircleRadius + circleStokeWidth;
             }
             linePaint.setColor(Color.WHITE);
             linePaint.setStyle(Paint.Style.FILL);
@@ -137,28 +340,25 @@ public class BoHeBMIView extends View {
             linePaint.setStyle(Paint.Style.STROKE);
             linePaint.setStrokeWidth(circleStokeWidth);
             linePaint.setColor(leftColor);
-            canvas.drawCircle(x, y + stokeWidth / 2, smallCircleRadius, linePaint);
+            canvas.drawCircle(x, y + lineWidth / 2, smallCircleRadius, linePaint);
 
             String currStr = String.format(Locale.getDefault(),"%.2f", currVal);
-            textPaint.setTextSize(textSize);
+            textPaint.setTextSize(normalTextSize);
             textPaint.setColor(leftColor);
-            float strWidth = textPaint.measureText(currStr);
+            bitmapDown = tintBitmap(bitmapDown, leftColor);
+            float strWidth = textPaint.measureText(currStr) + bitmapDown.getWidth();
             x -= (int)strWidth / 2;
             if (x < (int)strWidth / 2) {
                 x = (int)strWidth / 2;
             }
-            if (bitmapDown != null) {
-                canvas.drawBitmap(bitmapDown, y - textSize, x - textSize, null);
-            } else if (bitmapUp != null) {
-                canvas.drawBitmap(bitmapUp, y - textSize, x - textSize, null);
-            }
-            canvas.drawText(currStr, x, y - textSize, textPaint);
+            canvas.drawBitmap(bitmapDown, x - bitmapDown.getWidth(), y - bitmapDown.getHeight() - normalTextSize / 2, null);
+            canvas.drawText(currStr, x, y - normalTextSize, textPaint);
         } else if (currVal > maxNormal) {
             // 当前值在右边部分
             int x = width / 3 * 2 + (int) (((currVal - maxNormal) / (double)(maxVal - maxNormal)) * width / 3) - smallCircleRadius;
-            int y = offsetY + height / 3 - stokeWidth / 2;
-            if (x + smallCircleRadius > width) {
-                x = width - smallCircleRadius;
+            int y = offsetY + height / 3 - lineWidth / 2;
+            if (x + smallCircleRadius + circleStokeWidth > width) {
+                x = width - smallCircleRadius - circleStokeWidth;
             }
             linePaint.setColor(Color.WHITE);
             linePaint.setStyle(Paint.Style.FILL);
@@ -167,21 +367,24 @@ public class BoHeBMIView extends View {
             linePaint.setStyle(Paint.Style.STROKE);
             linePaint.setStrokeWidth(circleStokeWidth);
             linePaint.setColor(rightColor);
-            canvas.drawCircle(x, y + stokeWidth / 2, smallCircleRadius, linePaint);
+            canvas.drawCircle(x, y + lineWidth / 2, smallCircleRadius, linePaint);
 
             String currStr = String.format(Locale.getDefault(),"%.2f", currVal);
-            textPaint.setTextSize(textSize);
+            textPaint.setTextSize(normalTextSize);
             textPaint.setColor(rightColor);
-            float strWidth = textPaint.measureText(currStr);
+
+            bitmapUp = tintBitmap(bitmapUp, rightColor);
+            float strWidth = textPaint.measureText(currStr) + bitmapUp.getWidth();
             x -= (int)strWidth / 2;
             if (x + (int)strWidth / 2 > width) {
                 x = width - (int)strWidth / 2;
             }
-            canvas.drawText(currStr, x, y - textSize, textPaint);
+            canvas.drawBitmap(bitmapUp, x, y - bitmapUp.getHeight() - normalTextSize / 2, null);
+            canvas.drawText(currStr, x + bitmapUp.getWidth(), y - normalTextSize, textPaint);
         } else {
             // 当前值在中间部分
             int x = width / 3 + (int) ((currVal - minNormal) / (double)(maxNormal - minNormal) * (width / 3)) - smallCircleRadius;
-            int y = offsetY + height / 3 - stokeWidth / 2;
+            int y = offsetY + height / 3 - lineWidth / 2;
             linePaint.setColor(Color.WHITE);
             linePaint.setStyle(Paint.Style.FILL);
             canvas.drawCircle(x, y, smallCircleRadius, linePaint);
@@ -189,27 +392,28 @@ public class BoHeBMIView extends View {
             linePaint.setStyle(Paint.Style.STROKE);
             linePaint.setStrokeWidth(circleStokeWidth);
             linePaint.setColor(midColor);
-            canvas.drawCircle(x, y + stokeWidth / 2, smallCircleRadius, linePaint);
+            canvas.drawCircle(x, y + lineWidth / 2, smallCircleRadius, linePaint);
 
             String currStr = String.format(Locale.getDefault(),"%.2f", currVal);
-            textPaint.setTextSize(textSize);
+            textPaint.setTextSize(normalTextSize);
             textPaint.setColor(midColor);
+
             float strWidth = textPaint.measureText(currStr);
             x -= (int)strWidth / 2;
-            canvas.drawText(currStr, x, y - textSize, textPaint);
+            canvas.drawText(currStr, x, y - normalTextSize, textPaint);
         }
 
 
         // 绘制坐标的正常、最小值和最大值
-        textPaint.setTextSize(textSize);
+        textPaint.setTextSize(normalTextSize);
         textPaint.setColor(Color.GRAY);
         float textWidth = textPaint.measureText(normalText);
-        canvas.drawText(normalText, (width - textWidth) / 2, offsetY + height / 3 + stokeWidth * 3 + textSize / 2, textPaint);
+        canvas.drawText(normalText, (width - textWidth) / 2, offsetY + height / 3 + lineWidth * 4 + normalTextSize / 2, textPaint);
 
         textWidth = textPaint.measureText(String.valueOf(minNormal));
-        canvas.drawText(String.valueOf(minNormal), width / 3 - textWidth / 2, offsetY + height / 3  + stokeWidth * 3 + textSize / 2, textPaint);
+        canvas.drawText(String.valueOf(minNormal), width / 3 - textWidth / 2, offsetY + height / 3  + lineWidth * 4 + normalTextSize / 2, textPaint);
 
         textWidth = textPaint.measureText(String.valueOf(maxNormal));
-        canvas.drawText(String.valueOf(maxNormal), width / 3 * 2 - textWidth / 2, offsetY + height / 3 + stokeWidth * 3 + textSize / 2, textPaint);
+        canvas.drawText(String.valueOf(maxNormal), width / 3 * 2 - textWidth / 2, offsetY + height / 3 + lineWidth * 4 + normalTextSize / 2, textPaint);
     }
 }

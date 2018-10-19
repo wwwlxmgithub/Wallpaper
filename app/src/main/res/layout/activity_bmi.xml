@@ -9,29 +9,63 @@
     <cn.edu.xjtu.wallpaper.BoHeBMIView
         android:id="@+id/boHeBMIView1"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="150dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:padding="10dp" />
+        app:normalText="normal"
+        app:title="bb 1"
+        app:currentVal="100"/>
     <cn.edu.xjtu.wallpaper.BoHeBMIView
         android:id="@+id/boHeBMIView2"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="150dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:padding="10dp" />
+        app:currentVal="350"
+        app:rightColor="@color/red"/>
     <cn.edu.xjtu.wallpaper.BoHeBMIView
         android:id="@+id/boHeBMIView3"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="150dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:padding="10dp" />
+        app:rightColor="@color/gray"
+        app:title="ccc 1"
+        app:currentVal="370" />
 
+    <cn.edu.xjtu.wallpaper.BoHeBMIView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:normalText="normal"
+        app:title="bb 1"
+        app:currentVal="100"/>
+    <cn.edu.xjtu.wallpaper.BoHeBMIView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:currentVal="350"
+        app:rightColor="@color/red"/>
+    <cn.edu.xjtu.wallpaper.BoHeBMIView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:rightColor="@color/gray"
+        app:title="ccc 1"
+        app:currentVal="370" />
 </LinearLayout>
