@@ -23,7 +23,7 @@ public class BoHeBMIView extends View {
     private float titleSize, normalTextSize;
     private Paint textPaint, linePaint;
     private Bitmap bitmapUp, bitmapDown;
-    private int width, height, lineWidth, smallCircleRadius, circleStokeWidth;
+    private int width, height, lineWidth, smallCircleRadius, circleStokeWidth, paddingLeft, paddingRight, paddingTop;
     public BoHeBMIView(Context context) {
         super(context);
         init(context, null);
@@ -131,8 +131,11 @@ public class BoHeBMIView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        width = w;
-        height = h;
+        paddingLeft = getPaddingLeft();
+        paddingRight = getPaddingRight();
+        width = w - paddingLeft - paddingRight;
+        paddingTop = getPaddingTop();
+        height = h - paddingTop;
     }
 
     public String getTitle() {
@@ -312,9 +315,10 @@ public class BoHeBMIView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawText(title, 20, 100, textPaint);
 
-        int offsetX = 0,offsetY = height / 3, window = width / 3;
+        canvas.drawText(title, paddingLeft, paddingTop + titleSize, textPaint);
+
+        int offsetX = paddingLeft,offsetY = height / 3 + paddingTop, window = width / 3;
 
         // 绘制线条
         linePaint.setColor(leftColor);
@@ -328,7 +332,7 @@ public class BoHeBMIView extends View {
         // 绘制当前值
         if (currVal < minNormal) {
             // 在左边部分
-            int x = (int) ((currVal / (double)minNormal) * width / 3) - smallCircleRadius;
+            int x = paddingLeft + (int) ((currVal / (double)minNormal) * width / 3) - smallCircleRadius;
             int y = offsetY + height / 3 - lineWidth / 2;
             if (x < smallCircleRadius + circleStokeWidth) {
                 x = smallCircleRadius + circleStokeWidth;
@@ -348,17 +352,17 @@ public class BoHeBMIView extends View {
             bitmapDown = tintBitmap(bitmapDown, leftColor);
             float strWidth = textPaint.measureText(currStr) + bitmapDown.getWidth();
             x -= (int)strWidth / 2;
-            if (x < (int)strWidth / 2) {
-                x = (int)strWidth / 2;
+            if (x < (int)strWidth / 2 + paddingLeft) {
+                x = (int)strWidth / 2 + paddingLeft;
             }
             canvas.drawBitmap(bitmapDown, x - bitmapDown.getWidth(), y - bitmapDown.getHeight() - normalTextSize / 2, null);
             canvas.drawText(currStr, x, y - normalTextSize, textPaint);
         } else if (currVal > maxNormal) {
             // 当前值在右边部分
-            int x = width / 3 * 2 + (int) (((currVal - maxNormal) / (double)(maxVal - maxNormal)) * width / 3) - smallCircleRadius;
+            int x = paddingLeft + width / 3 * 2 + (int) (((currVal - maxNormal) / (double)(maxVal - maxNormal)) * width / 3) - smallCircleRadius;
             int y = offsetY + height / 3 - lineWidth / 2;
-            if (x + smallCircleRadius + circleStokeWidth > width) {
-                x = width - smallCircleRadius - circleStokeWidth;
+            if (x + smallCircleRadius + circleStokeWidth + paddingRight > getWidth()) {
+                x = getWidth() - smallCircleRadius - circleStokeWidth - paddingRight;
             }
             linePaint.setColor(Color.WHITE);
             linePaint.setStyle(Paint.Style.FILL);
@@ -383,7 +387,7 @@ public class BoHeBMIView extends View {
             canvas.drawText(currStr, x + bitmapUp.getWidth(), y - normalTextSize, textPaint);
         } else {
             // 当前值在中间部分
-            int x = width / 3 + (int) ((currVal - minNormal) / (double)(maxNormal - minNormal) * (width / 3)) - smallCircleRadius;
+            int x = paddingLeft + width / 3 + (int) ((currVal - minNormal) / (double)(maxNormal - minNormal) * (width / 3)) - smallCircleRadius;
             int y = offsetY + height / 3 - lineWidth / 2;
             linePaint.setColor(Color.WHITE);
             linePaint.setStyle(Paint.Style.FILL);

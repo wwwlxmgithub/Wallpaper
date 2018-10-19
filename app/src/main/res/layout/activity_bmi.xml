@@ -5,10 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#ffffff"
+    android:padding="10dp"
     tools:context=".BMIActivity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/bg"
         android:orientation="vertical">
         <cn.edu.xjtu.wallpaper.BoHeBMIView
             android:id="@+id/boHeBMIView1"
@@ -20,7 +23,8 @@
             android:layout_marginTop="8dp"
             app:normalText="normal"
             app:title="bb 1"
-            app:currentVal="100"/>
+            app:currentVal="100"
+            android:background="@drawable/normal_bg"/>
         <cn.edu.xjtu.wallpaper.BoHeBMIView
             android:id="@+id/boHeBMIView2"
             android:layout_width="match_parent"
@@ -31,6 +35,7 @@
             android:layout_marginTop="8dp"
             app:currentVal="350"
             app:title="aaa 1"
+            android:background="@drawable/normal_bg"
             app:rightColor="@color/red"/>
         <cn.edu.xjtu.wallpaper.BoHeBMIView
             android:id="@+id/boHeBMIView3"
@@ -42,6 +47,7 @@
             android:layout_marginTop="8dp"
             app:rightColor="@color/gray"
             app:title="ccc 1"
+            android:background="@drawable/normal_bg"
             app:currentVal="370" />
 
         <cn.edu.xjtu.wallpaper.BoHeBMIView
@@ -51,19 +57,37 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:background="@drawable/normal_bg"
             app:normalText="normal"
             app:title="bb 1"
             app:currentVal="100"/>
         <cn.edu.xjtu.wallpaper.BoHeBMIView
             android:layout_width="match_parent"
             android:layout_height="150dp"
-            android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:background="@drawable/normal_bg_top"
             app:currentVal="350"
             app:title="365555475"
             app:rightColor="@color/red"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/composed_bg" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:textSize="16sp"
+            android:text="扽缸肯经济回报交换看板窥测老战后老残和漏看照料吧凉粉看见了粪坑还法老泵黄戳风景;lfl;sfdklldkkkdldkdkjl;dkfdojgiofgjgidlfmgv,riofmjgoif,lkvofld"
+            android:background="@drawable/normal_bg_bottom"
+            android:padding="16dp"
+            />
         <cn.edu.xjtu.wallpaper.BoHeBMIView
             android:layout_width="match_parent"
             android:layout_height="150dp"
@@ -71,6 +95,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:background="@drawable/normal_bg"
             app:rightColor="@color/gray"
             app:title="ccc 1"
             app:currentVal="370" />
