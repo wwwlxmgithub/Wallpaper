@@ -2,15 +2,13 @@
 <layer-list
     xmlns:android="http://schemas.android.com/apk/res/android"
     >
-    <item android:height="30dp" android:width="500dp">
+    <item android:height="30dp" android:width="500dp" android:top="0dp" android:bottom="0dp" android:left="0dp"
+        android:right="0dp">
         <shape android:shape="rectangle" >
             <solid android:color="#ffffff" />
         </shape>
     </item>
 
-    <item android:gravity="center" android:height="8dp" android:width="500dp" android:drawable="@drawable/line">
-
-    </item>
     <item android:gravity="start" android:height="30dp" android:width="30dp" android:start="-15dp" >
         <shape android:shape="oval">
             <solid android:color="@color/bg" />
@@ -21,4 +19,7 @@
             <solid android:color="@color/bg" />
         </shape>
     </item>
+    <item android:gravity="center" android:height="16dp" android:left="15dp" android:right="15dp"  android:drawable="@drawable/line"/>
+
+
 </layer-list>

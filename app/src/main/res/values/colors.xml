@@ -8,4 +8,5 @@
     <color name="gray">#acacac</color>
     <color name="red">#fdff3f42</color>
     <color name="bg">#f9f9f9f9</color>
+    <color name="gray_light">#e2e2e2</color>
 </resources>
